@@ -1,10 +1,24 @@
 # Governed Long-Running Workflows in Excel Agent Mode
 
-A framework for running long, multi-phase agentic workflows in Excel with a **single agent** (Microsoft 365 Copilot agent mode / "Edit with Copilot", or similar) without hitting context-window limits — with explicit governance: autonomy profiles, escalation brakes, resume safety, and machine-readable checkpoints.
+**Attach one file. Copilot agent mode builds the whole governed-workflow workbook for you.**
 
-## Core paradigm
+This repo turns a blank Excel workbook into a governed, resumable, long-running agentic workflow — batch loop, autonomy profiles, escalation brakes, checkpoint logs — without you assembling a single tab by hand.
 
-**State-as-memory, conversation-as-disposable-execution-slot.** The workbook holds all state; each agent session holds only the current batch. Restarting from workbook state always beats hoping a long conversation remembers.
+## Get started in 3 minutes
+
+1. Create a blank workbook on **OneDrive/SharePoint** and open **Copilot agent mode** ("Edit with Copilot").
+2. **Attach one file:** [`governed-excel-agent-setup.md`](governed-excel-agent-setup.md) — it contains both the setup prompt and the full governance guide.
+3. Send with: **"Run the setup in the attached file."**
+
+The agent then builds all 11 tabs, stages the protocol/runtime/playbook rules, sets up the tracker schema and status validation, and seeds your run record — ready for your first governed run. (Prefer manual setup? The tab map is in **RUN-1/RUN-2/RUN-3** of the guide.)
+
+## What you get
+
+- **State-as-memory architecture** — the workbook holds all state; each agent session holds only the current batch. Restarting from workbook state always beats hoping a long conversation remembers.
+- **Resume safety** — outputs are written before statuses flip; any interruption is a checkpoint, not a failure (`RUN-6`).
+- **Bounded context** — per-batch context packs and fixed-format digests; batch sizes computed from live headroom, never hard-coded (`RUN-5 P8`).
+- **Human control** — fixed status state machine, retry budgets, and mandatory escalation triggers that no autonomy profile can loosen (`PROTO-3`, `RUN-7`).
+- **No phantom data** — expired attachments and unreachable sources escalate (`FILE_EXPIRED` / `SOURCE_UNREACHABLE`); the agent never reconstructs file contents from memory (`RUN-5 P9/P10`).
 
 ## The three layers
 
@@ -16,29 +30,24 @@ A framework for running long, multi-phase agentic workflows in Excel with a **si
 
 Rule IDs are stable: playbooks and prompts reference rules by ID, never by paraphrase. The three-layer separation, machine-readable checkpoint formats, and stable IDs are load-bearing seams — treat changes to them as structural decisions.
 
-## Quick start
+## After setup runs
 
-1. Read [`docs/governed-workflows-guide.md`](docs/governed-workflows-guide.md) — the merged protocol + runtime + playbook guide (single-file edition).
-2. Create a workbook on OneDrive/SharePoint with the tab map from **RUN-1** (`Protocol`, `Runtime`, `Playbook`, `Tracker`, `ContextPack`, `Output`, `Digest`, `Handoff`, `Cold`, `Staging`, `RunControl`).
-3. Paste each layer into its tab (one tab per layer, not per section).
-4. Author your task-specific playbook sections per the rules in **Layer 3** of the guide, using the [`templates/`](templates/) for Digest entries, Handoff records, and Context Packs.
-5. Start a run: the agent asks you to pick an autonomy profile (**A – Guided**, **B – Rolling**, **C – Hands-off**), then turns the batch loop itself. Escalation brakes fire identically under all profiles.
+1. Author your task's `PLAY-x` sections in the `Playbook` tab (authoring rules in Layer 3 of the guide; start with a `PLAY-0` run-start checklist).
+2. Start your first run by stating your objective — the agent asks you to pick an autonomy profile per `PROTO-3`:
+   - **A – Guided:** approves each batch with you first
+   - **B – Rolling** (default): loops autonomously, posts digest entries as running reports
+   - **C – Hands-off:** runs to phase end, reports at the end
+3. Supervise from anywhere — digest entries and decision requests are short enough for a phone (`PROTO-7`).
 
 ## Repository contents
 
 ```
-docs/governed-workflows-guide.md   Canonical merged guide (PROTO / RUN / PLAY, version merged-1.2)
+governed-excel-agent-setup.md      The headline: one attachment builds the whole workbook
+docs/governed-workflows-guide.md   Canonical guide text (embedded in the setup file; kept here for reading/maintenance)
 skill/SKILL.md                     Base skill: excel-single-agent-context (operational patterns)
 templates/                         Machine-readable templates (digest, handoff, context pack, tracker schema)
 .github/                           Issue and pull request templates
 ```
-
-## Key guarantees
-
-- **Resume safety** — outputs are written before statuses flip; any interruption is a checkpoint, not a failure (`RUN-6`).
-- **Bounded context** — per-batch context packs and fixed-format digests; batch sizes are computed from live headroom, never hard-coded (`RUN-5 P8`).
-- **Human control** — fixed status state machine, retry budgets, and mandatory escalation triggers that no autonomy profile can loosen (`PROTO-3`, `RUN-7`).
-- **No phantom data** — expired attachments and unreachable sources escalate (`FILE_EXPIRED` / `SOURCE_UNREACHABLE`); the agent never reconstructs file contents from memory (`RUN-5 P9/P10`).
 
 ## Contributing
 

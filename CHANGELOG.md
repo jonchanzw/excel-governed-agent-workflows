@@ -4,6 +4,9 @@ All notable changes to this framework are documented here. Rule IDs (`PROTO-n` /
 
 ## [Unreleased]
 
+- Added `governed-excel-agent-setup.md` at repo root: single-file setup — setup prompt + full guide embedded. End users attach one file to Copilot agent mode and the agent builds the full 11-tab workbook.
+- README rewritten to lead with the one-file setup flow.
+
 ## [merged-1.2] — 2026-10-16
 
 - Initial public scaffold of the merged protocol + runtime + playbook guide (single-file edition).
