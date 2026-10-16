@@ -1,0 +1,23 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Office temp files
+~$*.xlsx
+~$*.xlsm
+~$*.docx
+
+# Local workbook copies and scratch data — never commit real workbooks or staged data
+*.xlsx
+*.xlsm
+*.csv
+staging/
+data/
+
+# Environment / secrets
+.env
+*.local
+secrets.*
