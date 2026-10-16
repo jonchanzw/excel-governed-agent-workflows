@@ -9,7 +9,7 @@
 User attaches the counterparty confirmation file (staged immediately per RUN-5 P9), confirms Power Query sources refreshed, picks **Profile B**. RunControl row 2:
 
 ```
-RUN-20261016-01 | PB-1.0 | 1.0 | Q3 intercompany rec | B | 2026-10-16T09:02Z | 2026-10-16T09:02Z | Active | 1 | 1 | User | Output!A:H
+RUN-20261016-01 | PB-1.0 | 1.0 | Q3 intercompany rec | B | 2026-10-16T09:02Z | 2026-10-16T09:02Z | Active | 2 | 1 | User | Output!A:H
 ```
 
 ## 2. Tracker before batch 1
