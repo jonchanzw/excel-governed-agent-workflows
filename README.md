@@ -85,7 +85,6 @@ Full troubleshooting table: [`governed-excel-agent-setup.md`](governed-excel-age
 governed-excel-agent-setup.md      The headline: one attachment builds the whole workbook
 docs/governed-workflows-guide.md   Canonical guide text (embedded in the setup file; kept here for reading/maintenance)
 examples/                          Filled-in playbook + a complete worked run
-skill/SKILL.md                     Base skill: excel-single-agent-context (operational patterns)
 templates/                         Machine-readable templates (digest, handoff, context pack, tracker schema)
 .github/                           Issue and pull request templates
 ```

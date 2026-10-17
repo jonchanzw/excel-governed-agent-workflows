@@ -7,6 +7,7 @@ All notable changes to this framework are documented here. Rule IDs (`PROTO-n` /
 - Added `examples/`: filled-in PLAY-0 run-start checklist and a complete worked reconciliation run (tracker rows, digest entries, mid-run systemic failure, handoff).
 - README: prerequisites box, privacy note, limitations section, common-issues FAQ, MIT/version badges, headline reworded to "Get set up in one prompt", screenshot placeholders for post-first-run captures.
 - Fixed worked-example consistency bug: RunControl `CurrentPhase` now 2, matching tracker and checkpoint records.
+- Removed `skill/SKILL.md` (superseded earlier edition of the framework). `governed-excel-agent-setup.md` is now the single drop-in file; rules of record live in `docs/governed-workflows-guide.md`. No parallel copies to drift.
 
 - Added `governed-excel-agent-setup.md` at repo root: single-file setup — setup prompt + full guide embedded. End users attach one file to Copilot agent mode and the agent builds the full 11-tab workbook.
 - README rewritten to lead with the one-file setup flow.

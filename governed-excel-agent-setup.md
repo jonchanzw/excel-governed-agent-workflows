@@ -1,5 +1,7 @@
 # Governed Excel Agent — One-Step Setup
 
+> **This is the file for Excel Copilot agent mode users** — the only attachment you need.
+
 **This one file is the entire setup.** Attach it to a single prompt in Excel Copilot agent mode and the agent builds the complete governed-workflow workbook for you.
 
 ## How to use (30 seconds)
