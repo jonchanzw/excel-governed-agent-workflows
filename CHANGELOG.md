@@ -2,7 +2,14 @@
 
 All notable changes to this framework are documented here. Rule IDs (`PROTO-n` / `RUN-n` / `PLAY-x`) are stable once published; structural changes are called out explicitly.
 
-## [Unreleased]
+## [merged-1.3] — 2026-10-19
+
+- **Objective-driven setup:** the agent asks for the user's objective (plus data situation), then presents one combined proposal — restated objective, a drafted `DoneDefinition` goal contract (new `RunControl` field, RUN-3), and a tailored tab set — for a single confirmation before building.
+- **RUN-1 core vs. conditional tabs:** `Tracker`, `ContextPack`, `Output`, `Digest`, `RunControl`, and rule tabs are always built; `Staging`, `Handoff`, `Cold` only when needed, with lazy creation when a run crosses a trigger.
+- **Agent-drafted starting playbook:** setup now drafts PLAY-0 plus the first phase (minimal by instruction) for user approval — the heaviest manual step becomes a review.
+- **Guided autonomy-profile choice** at setup end (plain-language A/B/C per PROTO-3), recorded in RunControl.
+- **Progress visibility:** Digest entries open with a plain-language STATUS line including formula-computed % complete (RUN-8); the final Handoff doubles as the run's final report (goal met, exceptions, decisions — three lines, no new format).
+- **Setup file navigation:** prompt and embedded guide now collapsed under expandable sections; the visible file is ~40 lines. Guide's legacy loading instructions slimmed; CONTRIBUTING now notes the two-location setup description and no-drift rule.
 
 - Added `examples/`: filled-in PLAY-0 run-start checklist and a complete worked reconciliation run (tracker rows, digest entries, mid-run systemic failure, handoff).
 - README: prerequisites box, privacy note, limitations section, common-issues FAQ, MIT/version badges, headline reworded to "Get set up in one prompt", screenshot placeholders for post-first-run captures.

@@ -9,7 +9,7 @@
 User attaches the counterparty confirmation file (staged immediately per RUN-5 P9), confirms Power Query sources refreshed, picks **Profile B**. RunControl row 2:
 
 ```
-RUN-20261016-01 | PB-1.0 | 1.0 | Q3 intercompany rec | B | 2026-10-16T09:02Z | 2026-10-16T09:02Z | Active | 2 | 1 | User | Output!A:H
+RUN-20261016-01 | PB-1.0 | 1.3 | Q3 intercompany rec | all 214 pairs reconciled, breaks ≥ 50k routed, zero unclassified errors | B | 2026-10-16T09:02Z | 2026-10-16T09:02Z | Active | 2 | 1 | User | Output!A:H
 ```
 
 ## 2. Tracker before batch 1
@@ -31,6 +31,7 @@ ContextPack materialises: PLAY-2 text verbatim, the 25 Ready rows, the output sc
 ## 4. Digest entry after batch 1
 
 ```
+STATUS: Batch 1 of 9 | 8% complete (17 of 214) | 2 breaks flagged | decisions: none
 RUN-20261016-01 | CKPT-003 | BATCH | 2 | 1
 25 | 0 | 189 | 2
 Exceptions: {ICP-0011:BREAK, ICP-0019:BREAK}

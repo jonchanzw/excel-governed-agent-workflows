@@ -1,7 +1,7 @@
 # Governed Long-Running Workflows in Excel Agent Mode
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-merged--1.2-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-merged--1.3-blue.svg)](CHANGELOG.md)
 
 **Attach one file. Copilot agent mode builds the whole governed-workflow workbook for you.**
 
@@ -19,9 +19,9 @@ This repo turns a blank Excel workbook into a governed, resumable, long-running 
 
 1. Create a blank workbook on **OneDrive/SharePoint** and open **Copilot agent mode** ("Edit with Copilot").
 2. **Attach one file:** [`governed-excel-agent-setup.md`](governed-excel-agent-setup.md) — it contains both the setup prompt and the full governance guide.
-3. Send with: **"Run the setup in the attached file."**
+3. Send with: **"Run the setup in the attached file. My objective: [one sentence describing your task]."**
 
-The agent then builds all 11 tabs, stages the protocol/runtime/playbook rules, sets up the tracker schema and status validation, and seeds your run record. (Prefer manual setup? The tab map is in **RUN-1/RUN-2/RUN-3** of the guide.)
+The agent proposes a tab set tailored to your objective — core governed-workflow tabs always, conditional tabs (`Staging`, `Handoff`, `Cold`) only when your build needs them — waits for your go-ahead, then builds: rule tabs staged, tracker schema, status validation, and a seeded run record. (Prefer manual setup? The tab map is in **RUN-1/RUN-2/RUN-3** of the guide.)
 
 <!-- Screenshots: add docs/screenshots/after-setup.png (the built 11-tab workbook) and docs/screenshots/mid-run-digest.png (a Digest entry mid-run) after your first real run, then uncomment:
 ![The built workbook](docs/screenshots/after-setup.png)
@@ -62,12 +62,12 @@ Rule IDs are stable: playbooks and prompts reference rules by ID, never by parap
 
 ## After setup runs
 
-1. Author your task's `PLAY-x` sections in the `Playbook` tab (authoring rules in Layer 3 of the guide; start with a `PLAY-0` run-start checklist — see [`examples/play-0-run-start.md`](examples/play-0-run-start.md)).
-2. Start your first run by stating your objective — the agent asks you to pick an autonomy profile per `PROTO-3`:
+1. The agent proposes your goal contract (a one-sentence `DoneDefinition`), tab set, and a **draft starting playbook** (PLAY-0 + first phase) — you confirm or edit each.
+2. At the end of setup the agent asks you to choose an autonomy profile in plain language (per `PROTO-3`) and records it:
    - **A – Guided:** approves each batch with you first
    - **B – Rolling** (default): loops autonomously, posts digest entries as running reports
    - **C – Hands-off:** runs to phase end, reports at the end
-3. Supervise from anywhere — digest entries and decision requests are short enough for a phone (`PROTO-7`).
+3. Say **"start the run"** — the batch loop turns itself until a brake fires or the goal is met. Progress is always visible as the `% complete` STATUS line at the bottom of the `Digest` tab. Supervise from anywhere — digest entries and decision requests are short enough for a phone (`PROTO-7`).
 
 ## Common issues
 

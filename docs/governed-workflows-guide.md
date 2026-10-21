@@ -3,10 +3,7 @@
 
 **Generated from:** a generic governed-workflow protocol + the excel-single-agent-context skill — merged for direct consumption by Microsoft 365 Copilot agent mode in Excel ("Edit with Copilot").
 
-**How to load this document:**
-1. Paste each layer into its own workbook tab: `Protocol`, `Runtime`, `Playbook`. (Section headers double as tab names; one tab per layer is enough — do not create a tab per section.)
-2. Alternatively, attach this file to the first prompt of a run. NOTE: chat attachments expire after a limited number of prompts — always stage a copy in the workbook tabs as the durable source.
-3. Batches never read this document wholesale. The `ContextPack` tab quotes exactly the sections a batch needs (see RUN-1).
+**Loading this document:** the usual path is `governed-excel-agent-setup.md` (setup prompt + this guide embedded — one attachment). Manual alternative: paste each layer into its own workbook tab (`Protocol`, `Runtime`, `Playbook`; one tab per layer, never one per section). Either way, the workbook tabs are the durable store — chat attachments expire. Batches never read this document wholesale; `ContextPack` quotes exactly the sections a batch needs (see RUN-1).
 
 **ID scheme:** `PROTO-n` = orchestration rules · `RUN-n` = workbook runtime rules · `PLAY-x` = task-specific playbook sections (added per model). Rule IDs are stable — playbooks and prompts reference rules by ID, never by paraphrase.
 
@@ -91,6 +88,8 @@ The same state-as-memory paradigm applies to how the human supervises runs — s
 
 ## RUN-1. Workbook structure (tab map)
 
+**Core tabs (always created at setup):**
+
 | Tab | Role | Agent access |
 |---|---|---|
 | `Protocol` / `Runtime` / `Playbook` | This document, staged | Read one section at a time, by ID — via ContextPack, not the tab directly |
@@ -98,10 +97,20 @@ The same state-as-memory paradigm applies to how the human supervises runs — s
 | `ContextPack` | Materialised per-batch input (formula-driven) | Read fully |
 | `Output` | Agent writes batch results here | Write only |
 | `Digest` | Machine-readable checkpoint log | Read latest; append new |
-| `Handoff` | Phase-end structured handoff record | Read latest; append new |
-| `Cold` | Completed items, archived | No access |
-| `Staging` | External data imports + staged attachment extracts | Read only |
 | `RunControl` | One-row run record (RUN-3) | Read; update designated fields |
+
+**Conditional tabs (created when the build needs them):**
+
+| Tab | Create when | Agent access |
+|---|---|---|
+| `Staging` | The run has external sources (Power Query, attachments, connectors) | Read only |
+| `Handoff` | The run has more than one phase | Read latest; append new |
+| `Cold` | The first item reaches `Done` | No access |
+
+Rules:
+- At setup, the agent proposes the tab set from the user's stated objective — core tabs always, conditional tabs with a one-line justification each — and the user confirms before anything is built.
+- **Lazy creation:** if a run later crosses a trigger above (e.g. a source is added mid-run, a phase completes), the agent creates the matching tab at that point with its standard schema — never before.
+- Core tabs are never optional: resume safety (RUN-6) and checkpointing depend on them. A build that skips `Tracker`, `Digest`, or `RunControl` is not a governed run.
 
 The agent reads `ContextPack` and the latest `Digest` entry — never the full `Tracker`, rule tabs, or workbook.
 
@@ -114,9 +123,10 @@ The agent reads `ContextPack` and the latest `Digest` entry — never the full `
 
 ## RUN-3. Run record (`RunControl` tab, one row per run)
 
-`RunID | PlaybookVersion | WorkbookVersion | Objective | ApprovalProfile | StartedAt | LastCheckpointAt | RunStatus | CurrentPhase | CurrentBatch | TriggeredBy | OutputLocation`
+`RunID | PlaybookVersion | WorkbookVersion | Objective | DoneDefinition | ApprovalProfile | StartedAt | LastCheckpointAt | RunStatus | CurrentPhase | CurrentBatch | TriggeredBy | OutputLocation`
 
 - `ApprovalProfile` holds the PROTO-3 choice (A/B/C). `LastCheckpointAt` updates with every Digest entry — a stale value signals an interrupted run.
+- `DoneDefinition` is the goal contract: one measurable sentence defining "done" (e.g. "all pairs reconciled, breaks ≥ 50k routed to review, zero unclassified errors"). The agent proposes it from the user's objective at setup; the user confirms or edits it. **The agent may never edit its own DoneDefinition** — changes go through escalation. When DoneDefinition is met, the agent issues the final Handoff (RUN-8) and requests human acceptance; it does not self-declare success.
 
 ## RUN-4. Status state machine (fixed vocabulary — never invent new values)
 
@@ -193,6 +203,7 @@ Anything else rolls forward automatically, per the autonomy profile.
 
 **Digest entry (per batch, appended to `Digest`):**
 ```
+STATUS: Batch {N} of {total} | {pct}% complete ({done} of {items}) | {breaks} flagged | decisions: {none | n}
 RunID | CheckpointID | CheckpointType=BATCH | Phase | BatchNo
 CompletedCount | FailedCount | PendingCount | ExceptionCount
 Exceptions: {ItemID:ErrorCode list sized to headroom; if truncated "+N more, see Tracker Status=Failed"}
@@ -200,6 +211,7 @@ DecisionRequired: {none | description} | DecisionCode
 ObservedDuration | ObservedFailureMode | RecommendedNextBatchSize
 NextSectionID | NextBatchNo | CreatedAt
 ```
+- The `STATUS` line is plain language, first, so a supervisor can read the bottom row of `Digest` on a phone. The percentage is **formula-computed** from Tracker statuses (`Done + Validated + Cold` over total rows) — never agent-estimated (RUN-5 P6).
 
 **Handoff record (per phase end, appended to `Handoff`):**
 ```
@@ -209,6 +221,7 @@ PendingCount + ItemIDs sized to headroom; if truncated "+N more, see Tracker Sta
 Anomalies: {anything the next phase must know; if none, "none"}
 DecisionRequired: {none | description + required input}
 ```
+- **Final Handoff = final report.** When `DoneDefinition` (RUN-3) is met, the last Handoff entry doubles as the run's final report: append three lines — goal met (yes/no against DoneDefinition), exception total, decisions made — and request human acceptance. No separate report format.
 
 **Context pack assembly (per batch):**
 ```
@@ -267,4 +280,4 @@ Task-specific sections, added per model. Authoring rules:
 
 ---
 
-*End of document. Version: merged-1.2*
+*End of document. Version: merged-1.3*

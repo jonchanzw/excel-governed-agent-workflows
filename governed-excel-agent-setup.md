@@ -2,88 +2,117 @@
 
 > **This is the file for Excel Copilot agent mode users** — the only attachment you need.
 
-**This one file is the entire setup.** Attach it to a single prompt in Excel Copilot agent mode and the agent builds the complete governed-workflow workbook for you.
+**One file, one prompt, your objective.** Attach this file in Excel Copilot agent mode, state what you're building, and the agent proposes the goal, success criteria, and workbook structure — then drafts your starting playbook — for your approval before anything runs.
 
 ## How to use (30 seconds)
 
 1. Create a **blank workbook** on OneDrive/SharePoint and open **Copilot agent mode** ("Edit with Copilot").
 2. **Attach this file** (`governed-excel-agent-setup.md`) to your prompt.
-3. Send with a short message: **"Run the setup in the attached file."**
+3. Send: **"Run the setup in the attached file. My objective: [one sentence — e.g. reconcile Q3 intercompany balances across two entities]. My data: [where it lives, or 'no external data']."**
 
-The agent will create all 11 tabs, stage the protocol/runtime/playbook rules, set up the tracker schema and status validation, and seed your run record. When it reports back, setup is done — author your `PLAY-x` sections (see Layer 3 below) and start your first run.
+You confirm twice (proposal, then playbook draft), choose a supervision profile, and the workbook is ready to run.
 
-> Fallback: if the agent treats this file as reference material instead of instructions, copy the prompt block below and **paste it as your message text**, with this file still attached.
+## Troubleshooting
 
-> ⚠️ Attachments expire after a limited number of prompts (see RUN-5 P9). This works in one pass because the guide is consumed once, up front, and immediately staged into workbook tabs — after that, the workbook is self-sufficient.
+| Symptom | Fix |
+|---|---|
+| Agent treats the file as reference, not instructions | Expand "Setup prompt" below, paste it as your message text, keep the file attached |
+| Agent builds before proposing | Reply: "Stop — present the proposal first (step 1)" |
+| Playbook draft is huge | Reply: "Smallest playbook that achieves the objective — PLAY-0 plus the first phase only" |
+| Tabs created but rule text missing | Ask for one tab at a time: "populate the Protocol tab only" |
+| Validation list rejected | Some tenants limit validation lists; write the allowed values into a note cell instead and rely on RUN-4 discipline |
 
----
-
-## THE SETUP PROMPT
+<details>
+<summary><strong>SETUP PROMPT — agent instructions (expand only for the fallback paste)</strong></summary>
 
 ```
 You are setting up a governed agentic-workflow workbook. The attached file has
 two parts: this prompt (top) and the GOVERNANCE GUIDE (below the divider marked
-"GUIDE — SOURCE TEXT"). Execute these steps in order. Do not improvise beyond
+"GUIDE - SOURCE TEXT"). Execute these steps in order. Do not improvise beyond
 them; if anything is ambiguous, stop and ask me.
 
-1. Create these tabs, in this order, exactly named:
+1. PROPOSE - do not build yet. From my stated objective, present ONE proposal
+   covering:
+   - Objective restated in one sentence
+   - DoneDefinition: a measurable one-sentence success criteria you draft for
+     me to confirm or edit (this becomes the goal contract, RUN-3)
+   - Data situation: sources I named mapped to authorised paths (RUN-5 P10);
+     anything missing flagged as a question for me
+   - Tab set: CORE tabs always (Protocol, Runtime, Playbook, Tracker,
+     ContextPack, Output, Digest, RunControl); CONDITIONAL tabs only if needed
+     (Staging - external sources; Handoff - multi-phase; Cold - completed-item
+     archive), one line of justification each
+   Wait for my confirmation.
+
+2. On confirmation, create the confirmed tabs, exactly named, core first:
    Protocol, Runtime, Playbook, Tracker, ContextPack, Output, Digest,
-   Handoff, Cold, Staging, RunControl
+   RunControl - then any confirmed conditional tabs.
 
-2. Populate the rule tabs from the GUIDE section of the attached file
+3. Populate the rule tabs from the GUIDE section of the attached file
    (do NOT copy this prompt into any tab):
-   - Protocol tab  <- the full text of LAYER 1 (PROTO-1 through PROTO-7),
-     one section per block, keeping rule IDs verbatim.
-   - Runtime tab   <- the full text of LAYER 2 (RUN-1 through RUN-12),
-     same treatment.
-   - Playbook tab  <- the full text of LAYER 3, plus a placeholder line:
-     "PLAY-0 to be authored for this model - see guide Layer 3 authoring rules."
+   - Protocol tab  <- LAYER 1 (PROTO-1 through PROTO-7), verbatim, IDs intact
+   - Runtime tab   <- LAYER 2 (RUN-1 through RUN-12), verbatim, IDs intact
+   - Playbook tab  <- LAYER 3, verbatim
 
-3. Create the working tabs with these exact header rows (row 1):
+4. Create the working tabs with these exact header rows (row 1):
    - Tracker:     ItemID | Status | BatchNo | Phase | KeyFields | NextAction | ErrorCode | Attempts
-   - RunControl:  RunID | PlaybookVersion | WorkbookVersion | Objective | ApprovalProfile |
-                  StartedAt | LastCheckpointAt | RunStatus | CurrentPhase | CurrentBatch |
-                  TriggeredBy | OutputLocation
-   - Digest:      (one header cell) "Digest entries - append one row per batch, format per RUN-8"
-   - Handoff:     (one header cell) "Handoff records - append one row per phase end, format per RUN-8"
-   - Output:      leave empty except a note cell: "Output schema is defined per playbook step"
-   - ContextPack: leave empty except a note cell: "Materialised per batch - see RUN-8 assembly spec"
-   - Cold:        same header row as Tracker
-   - Staging:     leave empty except a note cell: "External data imports land here - read only"
+   - RunControl:  RunID | PlaybookVersion | WorkbookVersion | Objective | DoneDefinition |
+                  ApprovalProfile | StartedAt | LastCheckpointAt | RunStatus | CurrentPhase |
+                  CurrentBatch | TriggeredBy | OutputLocation
+   - Digest:      one note cell: "One entry per batch, format per RUN-8; STATUS line first"
+   - Output:      one note cell: "Output schema is defined per playbook step"
+   - ContextPack: one note cell: "Materialised per batch - see RUN-8 assembly spec"
+   - If confirmed: Handoff <- one note cell: "One entry per phase end, format per RUN-8"
+   - If confirmed: Cold    <- same header row as Tracker
+   - If confirmed: Staging <- one note cell: "External data imports land here - read only"
 
-4. Apply data validation on Tracker!Status allowing only:
+5. Apply data validation on Tracker!Status allowing only:
    Ready, In Progress, Validated, Done, Cold, Failed, Escalated
 
-5. Fill RunControl row 2 with: a generated RunID in format RUN-YYYYMMDD-01,
-   WorkbookVersion = 1.0, StartedAt = now, RunStatus = Setup,
-   ApprovalProfile = (leave blank - ask me at run start per PROTO-3).
+6. Fill RunControl row 2: RunID in format RUN-YYYYMMDD-01, WorkbookVersion = 1.3,
+   Objective = my objective, DoneDefinition = the confirmed success criteria,
+   StartedAt = now, RunStatus = Setup, ApprovalProfile = blank (see step 8).
 
-6. Report back: tab list created, any steps you could not complete, and the
-   RunID you generated. Then stop - do not begin any workflow work.
+7. DRAFT MY STARTING PLAYBOOK - smallest version that achieves the objective:
+   PLAY-0 (run-start checklist, pre-filled from step 1) plus the first phase
+   only, each section self-contained per the authoring rules in Layer 3.
+   Additional phases: propose titles only, do not write them. Append the draft
+   to the Playbook tab and present it for my approval. I may edit before
+   approving.
+
+8. ASK ME to choose an autonomy profile (PROTO-3), in plain language:
+   "How do you want to supervise runs?
+    A - Guided: I propose each batch and wait for your OK (best for first runs)
+    B - Rolling: I work through batches on my own and post a short digest after
+       each one; I stop if anything needs your decision (the default)
+    C - Hands-off: I run to the end of the phase and report once at the end
+    The safety brakes work identically under all three - hands-off means less
+    chatter, never less protection. You can change this at any checkpoint."
+   Record my answer (A, B, or C) in RunControl!ApprovalProfile.
+
+9. Report back: tabs created (core + conditional), DoneDefinition, playbook
+   sections drafted, my chosen profile, anything you could not complete, and
+   the RunID. Remind me: conditional tabs can be added lazily later (RUN-1),
+   and my run starts when I say "start the run". Then stop - do not begin any
+   workflow work.
 ```
 
-### Troubleshooting
-
-| Symptom | Fix |
-|---|---|
-| Agent treats the file as reference, not instructions | Paste the prompt block as your message text, keep the file attached |
-| Tabs created but rule text missing | Ask: "Re-read the attached file and populate the Protocol tab only" - one tab per prompt |
-| Validation list rejected | Some tenants limit validation lists; write the allowed values into a note cell instead and rely on RUN-4 discipline |
+</details>
 
 ---
 
+<details>
+<summary><strong>GOVERNANCE GUIDE — source text staged into the workbook (expand to read the framework)</strong></summary>
+
 # GUIDE — SOURCE TEXT
-*(Everything below this divider is copied into the workbook tabs by the setup prompt. It is also the canonical reference for the framework.)*
+*(Everything below is copied into the workbook tabs by the setup prompt. It is also the canonical reference for the framework.)*
 
 # Governed Long-Running Workflows in Excel Agent Mode
 ### Combined protocol + runtime + playbook guide (single-file edition)
 
 **Generated from:** a generic governed-workflow protocol + the excel-single-agent-context skill — merged for direct consumption by Microsoft 365 Copilot agent mode in Excel ("Edit with Copilot").
 
-**How to load this document:**
-1. Paste each layer into its own workbook tab: `Protocol`, `Runtime`, `Playbook`. (Section headers double as tab names; one tab per layer is enough — do not create a tab per section.)
-2. Alternatively, attach this file to the first prompt of a run. NOTE: chat attachments expire after a limited number of prompts — always stage a copy in the workbook tabs as the durable source.
-3. Batches never read this document wholesale. The `ContextPack` tab quotes exactly the sections a batch needs (see RUN-1).
+**Loading this document:** the usual path is `governed-excel-agent-setup.md` (setup prompt + this guide embedded — one attachment). Manual alternative: paste each layer into its own workbook tab (`Protocol`, `Runtime`, `Playbook`; one tab per layer, never one per section). Either way, the workbook tabs are the durable store — chat attachments expire. Batches never read this document wholesale; `ContextPack` quotes exactly the sections a batch needs (see RUN-1).
 
 **ID scheme:** `PROTO-n` = orchestration rules · `RUN-n` = workbook runtime rules · `PLAY-x` = task-specific playbook sections (added per model). Rule IDs are stable — playbooks and prompts reference rules by ID, never by paraphrase.
 
@@ -168,6 +197,8 @@ The same state-as-memory paradigm applies to how the human supervises runs — s
 
 ## RUN-1. Workbook structure (tab map)
 
+**Core tabs (always created at setup):**
+
 | Tab | Role | Agent access |
 |---|---|---|
 | `Protocol` / `Runtime` / `Playbook` | This document, staged | Read one section at a time, by ID — via ContextPack, not the tab directly |
@@ -175,10 +206,20 @@ The same state-as-memory paradigm applies to how the human supervises runs — s
 | `ContextPack` | Materialised per-batch input (formula-driven) | Read fully |
 | `Output` | Agent writes batch results here | Write only |
 | `Digest` | Machine-readable checkpoint log | Read latest; append new |
-| `Handoff` | Phase-end structured handoff record | Read latest; append new |
-| `Cold` | Completed items, archived | No access |
-| `Staging` | External data imports + staged attachment extracts | Read only |
 | `RunControl` | One-row run record (RUN-3) | Read; update designated fields |
+
+**Conditional tabs (created when the build needs them):**
+
+| Tab | Create when | Agent access |
+|---|---|---|
+| `Staging` | The run has external sources (Power Query, attachments, connectors) | Read only |
+| `Handoff` | The run has more than one phase | Read latest; append new |
+| `Cold` | The first item reaches `Done` | No access |
+
+Rules:
+- At setup, the agent proposes the tab set from the user's stated objective — core tabs always, conditional tabs with a one-line justification each — and the user confirms before anything is built.
+- **Lazy creation:** if a run later crosses a trigger above (e.g. a source is added mid-run, a phase completes), the agent creates the matching tab at that point with its standard schema — never before.
+- Core tabs are never optional: resume safety (RUN-6) and checkpointing depend on them. A build that skips `Tracker`, `Digest`, or `RunControl` is not a governed run.
 
 The agent reads `ContextPack` and the latest `Digest` entry — never the full `Tracker`, rule tabs, or workbook.
 
@@ -191,9 +232,10 @@ The agent reads `ContextPack` and the latest `Digest` entry — never the full `
 
 ## RUN-3. Run record (`RunControl` tab, one row per run)
 
-`RunID | PlaybookVersion | WorkbookVersion | Objective | ApprovalProfile | StartedAt | LastCheckpointAt | RunStatus | CurrentPhase | CurrentBatch | TriggeredBy | OutputLocation`
+`RunID | PlaybookVersion | WorkbookVersion | Objective | DoneDefinition | ApprovalProfile | StartedAt | LastCheckpointAt | RunStatus | CurrentPhase | CurrentBatch | TriggeredBy | OutputLocation`
 
 - `ApprovalProfile` holds the PROTO-3 choice (A/B/C). `LastCheckpointAt` updates with every Digest entry — a stale value signals an interrupted run.
+- `DoneDefinition` is the goal contract: one measurable sentence defining "done" (e.g. "all pairs reconciled, breaks ≥ 50k routed to review, zero unclassified errors"). The agent proposes it from the user's objective at setup; the user confirms or edits it. **The agent may never edit its own DoneDefinition** — changes go through escalation. When DoneDefinition is met, the agent issues the final Handoff (RUN-8) and requests human acceptance; it does not self-declare success.
 
 ## RUN-4. Status state machine (fixed vocabulary — never invent new values)
 
@@ -270,6 +312,7 @@ Anything else rolls forward automatically, per the autonomy profile.
 
 **Digest entry (per batch, appended to `Digest`):**
 ```
+STATUS: Batch {N} of {total} | {pct}% complete ({done} of {items}) | {breaks} flagged | decisions: {none | n}
 RunID | CheckpointID | CheckpointType=BATCH | Phase | BatchNo
 CompletedCount | FailedCount | PendingCount | ExceptionCount
 Exceptions: {ItemID:ErrorCode list sized to headroom; if truncated "+N more, see Tracker Status=Failed"}
@@ -277,6 +320,7 @@ DecisionRequired: {none | description} | DecisionCode
 ObservedDuration | ObservedFailureMode | RecommendedNextBatchSize
 NextSectionID | NextBatchNo | CreatedAt
 ```
+- The `STATUS` line is plain language, first, so a supervisor can read the bottom row of `Digest` on a phone. The percentage is **formula-computed** from Tracker statuses (`Done + Validated + Cold` over total rows) — never agent-estimated (RUN-5 P6).
 
 **Handoff record (per phase end, appended to `Handoff`):**
 ```
@@ -286,6 +330,7 @@ PendingCount + ItemIDs sized to headroom; if truncated "+N more, see Tracker Sta
 Anomalies: {anything the next phase must know; if none, "none"}
 DecisionRequired: {none | description + required input}
 ```
+- **Final Handoff = final report.** When `DoneDefinition` (RUN-3) is met, the last Handoff entry doubles as the run's final report: append three lines — goal met (yes/no against DoneDefinition), exception total, decisions made — and request human acceptance. No separate report format.
 
 **Context pack assembly (per batch):**
 ```
@@ -344,4 +389,6 @@ Task-specific sections, added per model. Authoring rules:
 
 ---
 
-*End of document. Version: merged-1.2*
+*End of document. Version: merged-1.3*
+
+</details>

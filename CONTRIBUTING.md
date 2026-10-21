@@ -23,6 +23,8 @@ Structural changes require an issue first, with a rationale and a migration note
 
 ## Rules for edits
 
+- The setup flow is described in two places — README "Get set up" and `governed-excel-agent-setup.md` "How to use". Change both together, or make one link to the other.
+- The setup file embeds the guide verbatim below its divider. When `docs/governed-workflows-guide.md` changes, regenerate the setup file (header + guide concatenated) in the same commit — they must never drift.
 - Reference rules by ID, never by paraphrase.
 - Keep playbook sections self-contained — no "as mentioned above".
 - Keep templates machine-readable: fixed fields, one row per entry.
